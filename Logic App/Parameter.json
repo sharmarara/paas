@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "logicAppApiVersion": {
+            "value": "2016-10-01"
+        },
+        "workflowName": {
+            "value": "brs-euw-logic-d-appname-01"
+        },
+        "workflowLocation": {
+            "value": "westeurope"
+        },
+        "workflowSchema": {
+            "value": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"
+        },
+        "logicAppState": {
+            "value": "Enabled"
+        },
+        "definition": {
+            "value": "{\"contentVersion\":\"1.0.0.0\",\"parameters\":{},\"actions\":{},\"triggers\":{},\"outputs\":{},\"$schema\":\"https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#\"}"
+        },
+        "parameters": {
+            "value": {}
+        },
+        "diagnosticsApiVersion": {
+            "value": "2016-09-01"
+        },
+        
+        "retentionPolicyEnabled": {
+            "value": false
+        },
+        "logsEnabled": {
+            "value": true
+        },
+        "retentionDays": {
+            "value": 1
+        },
+        "omsSolutionApiVersion": {
+            "value": "2015-11-01-preview"
+        },
+        "omsSolutionLocation": {
+            "value": "west europe"
+        },
+        "omsSolutionName": {
+            "value": "LogicAppsManagement"
+        },
+        "omsWorkspaceName": {
+            "value": "brs-euw-la-d-test-02"
+        },
+        "resourceDeploymentApiVersion": {
+            "value": "2017-05-10"
+        },
+        "omsWorkspaceResourceGroupName": {
+            "value": "brs-euw-rsg-d-spoke-paas-01"
+        },
+        "tags": {
+            "value": {}
+        }
+    }
+}

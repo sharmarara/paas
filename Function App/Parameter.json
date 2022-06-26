@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "96306a04-91b8-4042-862e-14e86d8101fe"
+        },
+        "name": {
+            "value": "brs-euw-app-d-functest-01"
+        },
+        "location": {
+            "value": "west europe"
+        },
+        "hostingPlanName": {
+            "value": "brs-euw-plan-d-appname-01"
+        },
+        "serverFarmResourceGroup": {
+            "value": "brs-euw-rsg-d-spoke-paas-01"
+        },
+		"ResourceGroup": {
+            "value": "brs-euw-rsg-d-spoke-paas-01"
+        },
+		"AppInsightName": {
+            "value": "brs-euw-appi-d-appname-01"
+        },
+        "alwaysOn": {
+            "value": true
+        },
+        "storageAccountName": {
+            "value": "brseuwstodappname01"
+        },
+		"LogWorkSpace": {
+            "value": "brs-euw-la-d-test-02"
+        },
+        "sku": {
+            "value": "Premium P1V2"
+        },
+        "skuCode": {
+            "value": "P1V2"
+        },
+		"StorageSkuName": {
+            "value": "Standard_LRS"
+        },
+        "workerSize": {
+            "value": "3"
+        },
+        "workerSizeId": {
+            "value": "3"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "use32BitWorkerProcess": {
+            "value": false
+        },
+        "linuxFxVersion": {
+            "value": "dotnet|3.1"
+        }
+    }
+}

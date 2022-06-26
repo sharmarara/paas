@@ -1,0 +1,245 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string",
+			"metadata": {
+				"description": "Name of the Function App"
+			}
+        },
+        "location": {
+            "type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "The location in which the resources should be deployed."
+			}
+        },
+        "hostingPlanName": {
+            "type": "string",
+			"metadata": {
+				"description": "Name of the App Service Plan"
+			}
+        },
+        "serverFarmResourceGroup": {
+            "type": "string",
+			"metadata": {
+				"description": "Name of Resource Group in which App Service Plan deployed"
+			}
+        },
+		"ResourceGroup": {
+            "type": "string",
+			"metadata": {
+				"description": "Name of the Resource Group for Function App and Log Analytics"
+			}
+        },
+		"AppInsightName": {
+            "type": "string",
+			"metadata": {
+				"description": "Name of the Application Insight for Monitoring"
+			}
+        },
+		"alwaysOn": {
+            "type": "bool"
+        },
+        "storageAccountName": {
+            "type": "string",
+			"defaultValue": "[concat('storage', uniqueString(resourceGroup().id))]",
+			"metadata": {
+				"description": "Name of the storage account"
+			}
+        },
+		"LogWorkSpace": {
+            "type": "string",
+			"metadata": {
+				"description": "Name of the existing Log Analytics WorkSpace"
+			}
+        },
+        "use32BitWorkerProcess": {
+            "type": "bool"
+        },
+        "linuxFxVersion": {
+            "type": "string",
+			"metadata": {
+				"description": "Type of Linux Function"
+			}
+        },
+        "sku": {
+            "type": "String",
+            "defaultValue": "Standard S1",
+			"allowedValues": ["Standard S1","Standard S2","Standard S3","Premium P1V2","Premium P2V2","Premium P3V2","Premium P1V3","Premium P2V3","Premium P3V3"]
+		},
+		"skuCode": {
+            "type": "String",
+            "defaultValue": "S1",
+            "allowedValues": ["S1","S2","S3","P1V2","P2V2","P3V2","P1V3","P2V3","P3V3"]
+        },
+		"StorageSkuName": {
+            "type": "String",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": ["Premium_LRS","Premium_ZRS","Standard_GRS","Standard_GZRS","Standard_LRS","Standard_RAGRS","Standard_RAGZRS","Standard_ZRS"]
+        },
+        
+        "workerSize": {
+            "type": "string",
+			"metadata": {
+				"description": "Size of  workers"
+			}
+        },
+        "workerSizeId": {
+            "type": "string",
+			"metadata": {
+				"description": "Scaling worker size ID"
+			}
+        },
+        "numberOfWorkers": {
+            "type": "string",
+			"metadata": {
+				"description": "Number of workers for this App Service plan SKU"
+			}
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('name')]",
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "location": "[parameters('location')]",
+			"comments": "This Function App used to run your code in a serverless environment .",
+            "tags": {},
+            "dependsOn": [
+                "[concat('microsoft.insights/components/', parameters('AppInsightName'))]",
+                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+			    "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('name'), '.azurewebsites.net')]",
+						
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "name": "[parameters('name')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('AppInsightName')), '2015-05-01').InstrumentationKey]"
+
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('AppInsightName')), '2015-05-01').ConnectionString]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        }
+                    ],
+					
+                    "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
+                    "linuxFxVersion": "[parameters('linuxFxVersion')]",
+                    "alwaysOn": "[parameters('alwaysOn')]"
+                },
+                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+				"reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+				"scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 1536,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "redundancyMode": "None"
+            }
+        },
+        
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "kind": "linux",
+			"comments": "This App Service Plan defines a set of compute resources for a web app to run",
+            "tags": {},
+            "dependsOn": [],
+            "properties": {
+                "name": "[parameters('hostingPlanName')]",
+                "workerSize": "[parameters('workerSize')]",
+                "workerSizeId": "[parameters('workerSizeId')]",
+                "numberOfWorkers": "[parameters('numberOfWorkers')]",
+                "reserved": true
+            },
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            }
+        },
+        {
+            "apiVersion": "2020-02-02-preview",
+            "name": "[parameters('AppInsightName')]",
+            "type": "microsoft.insights/components",
+            "location": "[parameters('location')]",
+			"comments": "Application Insights is a feature of Azure Monitor, is an extensible Application Performance Management (APM) service.",
+            "tags": {},
+            "dependsOn": [],
+            "properties": {
+                "ApplicationId": "[parameters('name')]",
+                "Request_Source": "IbizaWebAppExtensionCreate",
+                "Flow_Type": "Redfield",
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('ResourceGroup'), '/providers/Microsoft.operationalinsights/workspaces/', parameters('LogWorkSpace'))]"
+            }
+        },
+        {
+            "apiVersion": "2019-06-01",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+			"comments": "This storage account is used to store the VM disks.",
+            "tags": {},
+            "sku": {
+                "name": "[parameters('StorageSkuName')]"
+            },
+            "properties": {
+                "supportsHttpsTrafficOnly": true
+            }
+        },
+		{
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('name'), '/', parameters('name'), '.azurewebsites.net')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+            ],
+            "properties": {
+                "siteName": "[parameters('name')]",
+                "hostNameType": "Verified"
+            }
+        }
+    ],
+	 "outputs": {}
+}

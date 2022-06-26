@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerPrimaryName": {
+            "value": "brs-euw-sqldb-d-sqlfg-01"
+        },
+        "sqlServerPrimaryAdminUsername": {
+            "value": "sqlsrvadmin"
+        },
+        "sqlServerPrimaryAdminPassword": {
+            "value": "Comnet@123"
+        },
+        "sqlServerSecondaryName": {
+            "value": "brs-euw-sqldb-d-sqlfg-02"
+        },
+        "sqlServerSecondaryRegion": {
+            "value": "northeurope"
+        },
+        "sqlServerSecondaryAdminUsername": {
+            "value": "sqlsrvadmin"
+        },
+        "sqlServerSecondaryAdminPassword": {
+            "value": "Comnet@123"
+        },
+        "sqlFailoverGroupName": {
+            "value": "brs-euw-sqlfg-d-fgrp-01"
+        },
+        "sqlFGDatabaseName": {
+            "value": "brs-euw-sqldb-d-fgdb1-01"
+        },
+        "location": {
+            "value": "westeurope"
+        }
+        
+    }
+}

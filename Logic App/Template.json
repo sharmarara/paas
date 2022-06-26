@@ -1,0 +1,191 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "logicAppApiVersion": {
+            "type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"description": "Logic App API version"
+				}
+        },
+        "workflowName": {
+            "type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"description": "Name of Workflow"
+				}
+        },
+        "workflowLocation": {
+            "type": "String",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Location for all resources."
+				}
+        },
+        "workflowSchema": {
+            "type": "String"
+        },
+        "logicAppState": {
+            "defaultValue": "Enabled",
+            "type": "String"
+        },
+        "definition": {
+            "defaultValue": "[concat('{\"contentVersion\":\"1.0.0.0\",\"parameters\":{},\"actions\":{},\"triggers\":{},\"outputs\":{},\"$schema\":\"', parameters('workflowSchema'), '\"}')]",
+            "type": "String"
+        },
+        "parameters": {
+            "defaultValue": {},
+            "type": "Object"
+        },
+        "diagnosticsApiVersion": {
+            "type": "String",
+			"metadata": {
+				"description": "API version of diagnostics"
+				}
+        },
+        
+        "retentionPolicyEnabled": {
+            "defaultValue": false,
+            "type": "Bool"
+        },
+        "logsEnabled": {
+            "defaultValue": true,
+            "type": "Bool"
+        },
+        "retentionDays": {
+            "defaultValue": 0,
+            "type": "Int"
+        },
+        "omsSolutionApiVersion": {
+            "type": "String",
+			"metadata": {
+				"description": "API version of omsSolution"
+				}
+        },
+        "omsSolutionLocation": {
+            "type": "String",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Location for omsAgent"
+				}
+        },
+        "omsSolutionName": {
+            "type": "String",
+			"metadata": {
+				"description": "Name of omsSolution Agent"
+				}
+        },
+        "omsWorkspaceName": {
+            "type": "String",
+			"metadata": {
+				"description": "Name of Log Analytics workspace "
+				}
+        },
+        "resourceDeploymentApiVersion": {
+            "defaultValue": "2017-05-10",
+            "type": "String",
+			"metadata": {
+				"description": "API version of Deployment"
+				}
+        },
+        "omsWorkspaceResourceGroupName": {
+            "type": "String",
+			"metadata": {
+				"description": "Resource Group name of Log Analytics workspace"
+				}
+        },
+        "tags": {
+            "defaultValue": {},
+            "type": "Object"
+        }
+    },
+    "variables": {
+        "omsWorkspaceResourceId": "[resourceId(subscription().subscriptionId, parameters('omsWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('omsWorkspaceName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "[parameters('logicAppApiVersion')]",
+            "name": "[parameters('workflowName')]",
+            "location": "[parameters('workflowLocation')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "definition": "[json(parameters('definition'))]",
+                "parameters": "[parameters('parameters')]",
+                "state": "[parameters('logicAppState')]"
+            },
+            "resources": [
+                {
+                    "type": "providers/diagnosticSettings",
+                    "apiVersion": "[parameters('diagnosticsApiVersion')]",
+                    "name": "microsoft.insights/service",
+                    "dependsOn": [
+                        "[concat('Microsoft.Logic/workflows/', parameters('workflowName'))]"
+                    ],
+                    "properties": {
+                        "storageAccountId": null,
+                        "serviceBusRuleId": null,
+                        "workspaceId": "[variables('omsWorkspaceResourceId')]",
+                        "eventHubAuthorizationRuleId": null,
+                        "eventHubName": null,
+                        "metrics": [
+                            {
+                                "timeGrain": "AllMetrics",
+                                "category": "AllMetrics",
+                                "enabled": "[parameters('logsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[parameters('retentionPolicyEnabled')]",
+                                    "days": "[parameters('retentionDays')]"
+                                }
+                            }
+                        ],
+                        "logs": [
+                            {
+                                "category": "WorkflowRuntime",
+                                "enabled": "[parameters('logsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[parameters('retentionPolicyEnabled')]",
+                                    "days": "[parameters('retentionDays')]"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[parameters('resourceDeploymentApiVersion')]",
+            "name": "omsSolutionTemplate",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "apiVersion": "[parameters('omsSolutionApiVersion')]",
+                            "type": "Microsoft.OperationsManagement/solutions",
+                            "location": "[parameters('omsSolutionLocation')]",
+                            "name": "[Concat(parameters('omsSolutionName'), '(', parameters('omsWorkspaceName'), ')')]",
+                            "properties": {
+                                "workspaceResourceId": "[variables('omsWorkspaceResourceId')]"
+                            },
+                            "plan": {
+                                "name": "[Concat(parameters('omsSolutionName'), '(', parameters('omsWorkspaceName'), ')')]",
+                                "product": "[Concat('OMSGallery/', parameters('omsSolutionName'))]",
+                                "promotionCode": "",
+                                "publisher": "Microsoft"
+                            }
+                        }
+                    ]
+                },
+                "parameters": {}
+            },
+            "resourceGroup": "[parameters('omsWorkspaceResourceGroupName')]"
+        }
+    ]
+}

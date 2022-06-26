@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverName": {
+            "value": "brs-euw-sql-d-armv2-01"
+        },
+        "serverLocation": {
+            "value": "westeurope"
+        },
+        "elasticPoolName": {
+            "value": "brs-euw-sqlep-d-sqlpool-02"
+        },
+        "skuName": {
+            "value": "BasicPool"
+        },
+        "tier": {
+            "value": "Basic"
+        },
+        "poolLimit": {
+            "value": "50"
+        },
+        "poolSize": {
+            "value": 5242880000
+        },
+        "perDatabasePerformanceMin": {
+            "value": "0"
+        },
+        "perDatabasePerformanceMax": {
+            "value": "5"
+        },
+        "zoneRedundant": {
+            "value": false
+        },
+        "licenseType": {
+            "value": "LicenseIncluded"
+        },
+        "elasticPoolTags": {
+            "value": {
+                "Application name": "sql_ep",
+                "Environment": "dev",
+                "type": "sqlpool",
+                "application": "mssql ep"
+            }
+        },
+        "maintenanceConfigurationId": {
+            "value": "/subscriptions/96306a04-91b8-4042-862e-14e86d8101fe/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default"
+        }
+    }
+}

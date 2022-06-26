@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "96306a04-91b8-4042-862e-14e86d8101fe"
+        },
+        "serviceAppName": {
+            "value": "brs-euw-app-d-appname-01"
+        },
+        "appServicePlanName": {
+            "value": "brs-euw-plan-d-appname-01"
+        },
+		"serverFarmResourceGroup": {
+            "value": "brs-euw-rsg-d-spoke-paas-01"
+        },
+		
+		"linuxFxVersion": {
+            "value": "dotnet|3.1"
+        },
+		"location": {
+            "value": "westeurope"
+        
+        }
+        
+    }
+}

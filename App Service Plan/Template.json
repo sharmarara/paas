@@ -1,0 +1,88 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String",
+            "defaultValue": "[concat('plan-',uniqueString(resourceGroup().id),'-appname')]",
+			"metadata": {
+				"description": "Name of the App Service Plan"
+			}
+        },
+        "skuCode": {
+            "type": "String",
+            "defaultValue": "F1",
+            "allowedValues": ["F1","D1","B1","B2","B3","S1","S2","S3","P1v2","P2v2","P3v2"]
+        },
+        "location":{
+            "type": "String",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "The location in which the resources should be deployed."
+			}
+        },
+		"kind":{
+            "type": "string",
+            "defaultValue": "linux",
+            "allowedValues": ["windows","linux"],
+			"metadata": {
+				"description": "Kind of Server App Plan "
+			}
+        }
+             
+    },
+    "variables": {
+        "sku": {
+            "F1":"Free",
+            "D1":"Shared",
+            "B1":"Basic",
+            "B2":"Basic",
+            "B3":"Basic",
+            "S1":"Standard",
+           "S2":"Standard",
+            "S3":"Standard",
+            "P1v2":"Premium",
+            "P2v2":"Premium",
+            "P3v2":"Premium"
+        },
+        "skuTier":"[variables('sku')[parameters('skuCode')]]"
+    },
+    "resources": [
+        {
+           "type": "Microsoft.Web/serverfarms",
+            "sku": {
+            "Tier": "[variables('skuTier')]",
+            "size": "[parameters('skuCode')]",
+            "name": "[parameters('skuCode')]"
+            },
+            "kind": "[parameters('kind')]",
+            "name": "[parameters('name')]",
+			"comments": "This App Service Plan defines a set of compute resources for a web app to run",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+			"tags": {
+                "displayName": "AppServicePlan",
+                "Application name": "AKS",
+                "Backup": "NA",
+                "Business Owner": "Borealis",
+                "Change Request": "NA",
+                "Cost Center": "NA",
+                "Data Classification": "NA",
+                "Environment": "Dev",
+                "IT Owner": "HCL",
+                "Managed By": "NA",
+                "Optimization": "NA"
+            },
+			"properties": {
+                "name": "[parameters('name')]",
+                "workerSize": "",
+                "workerSizeId": "",
+                "numberOfWorkers": "",
+                "reserved": "[if(equals(parameters('kind'),'windows'),bool('false'),bool('true'))]",
+                "hostingEnvironment": ""
+            }
+        }
+    ],
+	 "outputs": {}
+}
+

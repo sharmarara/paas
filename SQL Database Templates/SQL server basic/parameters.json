@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "allowAzureIps": {
+            "value": true
+        },
+        "administratorLogin": {
+        "reference": {
+    "keyVault": {
+      "id": "/subscriptions/96306a04-91b8-4042-862e-14e86d8101fe/resourceGroups/brs-euw-rsg-d-kv/providers/Microsoft.KeyVault/vaults/brs-euw-kv-d-01"
+    },
+    "secretName": "sqladminusername"
+  }
+      },
+        "administratorLoginPassword": {"reference": {
+    "keyVault": {
+      "id": "/subscriptions/96306a04-91b8-4042-862e-14e86d8101fe/resourceGroups/brs-euw-rsg-d-kv/providers/Microsoft.KeyVault/vaults/brs-euw-kv-d-01"
+    },
+    "secretName": "sqladminpwd"
+  }
+        },
+        "enableADS": {
+            "value": false
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "serverName": {
+            "value": "brs-euw-sql-d-armv2-11"
+        },
+        "enableVA": {
+            "value": false
+        },
+        "useVAManagedIdentity": {
+            "value": false
+        },
+        "serverTags": {
+            "value": {
+                "Project": "armv2",
+                "application": "sql server",
+                "Application name": "sql basic instance",
+                "Environment": "dev"
+            }
+        }
+    }
+}

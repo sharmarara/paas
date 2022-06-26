@@ -1,0 +1,81 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverName": {
+            "type": "string",
+			"defaultValue":"brs-euw-sql-d-armv2-01"
+        },
+        "serverLocation": {
+            "type": "string",
+	"defaultValue": "westeurope"
+        },
+        "elasticPoolName": {
+            "type": "string",
+			"defaultValue":"brs-euw-sqlep-d-sqlpool-02"
+        },
+        "skuName": {
+            "type": "string",
+"defaultValue":"BasicPool"
+        },
+        "tier": {
+            "type": "string",
+"defaultValue":"Basic"
+        },
+        "poolLimit": {
+            "type": "string",
+"defaultValue":50
+        },
+        "poolSize": {
+            "type": "int",
+			"defaultValue":5242880000
+        },
+        "perDatabasePerformanceMin": {
+            "type": "string"
+        },
+        "perDatabasePerformanceMax": {
+            "type": "string"
+        },
+        "zoneRedundant": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "licenseType": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "elasticPoolTags": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "maintenanceConfigurationId": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('serverName'), '/', parameters('elasticPoolName'))]",
+            "tags": "[parameters('elasticPoolTags')]",
+            "location": "[parameters('serverLocation')]",
+            "type": "Microsoft.Sql/servers/elasticpools",
+            "apiVersion": "2021-02-01-preview",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('tier')]",
+                "capacity": "[parameters('poolLimit')]"
+            },
+            "properties": {
+                "perDatabaseSettings": {
+                    "minCapacity": "[parameters('perDatabasePerformanceMin')]",
+                    "maxCapacity": "[parameters('perDatabasePerformanceMax')]"
+                },
+                "maxSizeBytes": "[parameters('poolSize')]",
+                "zoneRedundant": "[parameters('zoneRedundant')]",
+                "licenseType": "[parameters('licenseType')]",
+                "maintenanceConfigurationId": "[parameters('maintenanceConfigurationId')]"
+            }
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "keyVaultName": {
+        "value": "brs-euw-kv-d-test15"
+	  },
+      "location": {
+        "value": "westeurope"
+      },
+      "enabledForDeployment": {
+        "value": false
+      },
+	  "enabledForDiskEncryption": {
+        "value": false
+      },
+	  "enabledForTemplateDeployment": {
+        "value": true
+      },
+	  
+	  "objectId": {
+        "value": "9196b666-726c-4c72-8844-2664c39cb9fc"
+      },
+	  "keysPermissions": {
+        "value": ["list","get"]
+      },
+	  "secretsPermissions": {
+        "value": ["list","get"]
+      },
+	  "skuName": {
+        "value": "Standard"
+      },
+	 	  
+      "secretName": {
+        "value": "abc"
+      },
+      "secretValue": {
+        "value": "$(dbkeystring)"
+      }
+    }
+  }
+  
+  
